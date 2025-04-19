@@ -6,18 +6,37 @@
 Basic class for Process representation
 It contains relevant attributes as shown below
 */
-class Process {
- public:
-  int Pid();                               // TODO: See src/process.cpp
-  std::string User();                      // TODO: See src/process.cpp
-  std::string Command();                   // TODO: See src/process.cpp
-  float CpuUtilization();                  // TODO: See src/process.cpp
-  std::string Ram();                       // TODO: See src/process.cpp
-  long int UpTime();                       // TODO: See src/process.cpp
-  bool operator<(Process const& a) const;  // TODO: See src/process.cpp
+class Process
+{
+public:
+  // getters
+  int Pid();                              // TODO: See src/process.cpp
+  std::string User();                     // TODO: See src/process.cpp
+  std::string Command();                  // TODO: See src/process.cpp
+  float CpuUtilization();                 // TODO: See src/process.cpp
+  std::string Ram();                      // TODO: See src/process.cpp
+  long int UpTime();                      // TODO: See src/process.cpp
+  bool operator<(Process const &a) const; // TODO: See src/process.cpp
+
+  // Setters
+  void Pid(int);
+  void CpuUtilization(int);
+  void User(int);
+  void Command(int);
+  void Ram(int pid);
+  void UpTime(int pid);
+
+  // Operators overload
+  bool operator>(Process const &a) const;
 
   // TODO: Declare any necessary private members
- private:
+private:
+  int pid_{0};
+  float cpu_utilization_{0.0};
+  std::string user_{""};
+  std::string command_{""};
+  std::string ram_{""};
+  long up_time_{0};
 };
 
 #endif
