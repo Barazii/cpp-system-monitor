@@ -2,6 +2,9 @@
 #include <string>
 #include <unistd.h>
 #include <vector>
+#include <iostream>
+#include <filesystem>
+#include <map>
 
 #include "linux_parser.h"
 
@@ -9,6 +12,9 @@ using std::stof;
 using std::string;
 using std::to_string;
 using std::vector;
+
+const string MemTotal{"MemTotal"};
+const string MemFree{"MemFree"};
 
 // Parses the file to find a value for a given key
 string LinuxParser::KeyValParser(string key, string path)
@@ -80,52 +86,57 @@ string LinuxParser::Kernel()
 }
 
 // BONUS: Update this to use std::filesystem
+// 1. open dir
+// 2. read each file in the dir
+// 3. check if the file is a directory
+// 4. check if the file name is a number
+// 5. convert the file name to an int
+// 6. push the int to the vector
 vector<int> LinuxParser::Pids()
 {
   vector<int> pids;
-  DIR *directory = opendir(kProcDirectory.c_str());
-  struct dirent *file;
-  while ((file = readdir(directory)) != nullptr)
+  const std::filesystem::path procDir{kProcDirectory};
+  for (const std::filesystem::directory_entry &entry : std::filesystem::directory_iterator(procDir))
   {
-    // Is this a directory?
-    if (file->d_type == DT_DIR)
+    if (entry.is_directory())
     {
-      // Is every character of the name a digit?
-      string filename(file->d_name);
+      string filename = entry.path().filename().string();
       if (std::all_of(filename.begin(), filename.end(), isdigit))
       {
-        int pid = stoi(filename);
-        pids.push_back(pid);
+        pids.push_back(std::stoi(filename));
       }
     }
   }
-  closedir(directory);
   return pids;
 }
 
 // TODO: Read and return the system memory utilization
 float LinuxParser::MemoryUtilization()
 {
+  string key;
   string skip;
-  string temp;
+  string value;
   string line;
-  float mem = 0.0;
-  vector<string> memory;
+  std::map<string, float> memory;
   std::ifstream stream(kProcDirectory + kMeminfoFilename);
   if (stream.is_open())
   {
-    for (int i = 0; i < 2; ++i)
+    for (int i = 0; i < 10; ++i)
     {
       std::getline(stream, line);
       std::istringstream linestream(line);
-      linestream >> skip >> temp >> skip;
-      memory.push_back(temp);
+      linestream >> key >> value >> skip;
+      if (!key.empty())
+      {
+        key.pop_back();
+      }
+      if (key == MemTotal || key == MemFree)
+      {
+        memory[key] = std::stof(value);
+      }
     }
   }
-  float mem_total = std::stof(memory[0]);
-  float mem_free = std::stof(memory[1]);
-  mem = (mem_total - mem_free) / mem_total;
-  return mem;
+  return (memory[MemTotal] - memory[MemFree]) / memory[MemTotal];
 }
 
 // TODO: Read and return the system uptime
@@ -141,7 +152,7 @@ long LinuxParser::UpTime()
     std::istringstream linestream(line);
     linestream >> temp;
   }
-  uptime = std::atoi(temp.c_str());
+  uptime = std::stoi(temp);
   return uptime;
 }
 

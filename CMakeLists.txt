@@ -16,7 +16,7 @@ file(GLOB TEST_SOURCES "test/*.cpp")
 
 # executables (for main program and tests)
 add_executable(monitor ${SOURCES})
-add_executable(test_runner ${TEST_SOURCES} src/format.cpp src/linux_parser.cpp)
+add_executable(test_runner ${TEST_SOURCES} src/format.cpp src/linux_parser.cpp src/process.cpp src/processor.cpp src/system.cpp)
 
 # set the C++ standard
 set_property(TARGET monitor PROPERTY CXX_STANDARD 17)
