@@ -28,7 +28,7 @@ This project uses [Make](https://www.gnu.org/software/make/). The Makefile has f
 ## Architecture
 The software structure and dependency between the components of the system monitor is shown in the diagram below.
 
-![Dependency Diagram](images/dependency diagram/diagram.png)
+![Dependency Diagram](images/dependency-diagram/diagram.drawio.png)
 
 ## Instructions
 
