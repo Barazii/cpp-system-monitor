@@ -25,6 +25,11 @@ This project uses [Make](https://www.gnu.org/software/make/). The Makefile has f
 * `debug` compiles the source code and generates an executable, including debugging symbols
 * `clean` deletes the `build/` directory, including all of the build artifacts
 
+## Architecture
+The software structure and dependency between the components of the system monitor is shown in the diagram below.
+
+![Dependency Diagram](images/dependency diagram/diagram.png)
+
 ## Instructions
 
 1. Clone the project repository: `git clone https://github.com/udacity/CppND-System-Monitor-Project-Updated.git`
