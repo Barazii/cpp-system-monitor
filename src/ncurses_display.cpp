@@ -45,7 +45,7 @@ void NCursesDisplay::DisplaySystem(System &system, WINDOW *window)
   mvwprintw(window, row, 10, "");
   wprintw(window, "%s", ProgressBar(system.MemoryUtilization()).c_str());
   wattroff(window, COLOR_PAIR(1));
-  mvwprintw(window, ++row, 2,
+  mvwprintw(window, ++row, 2, "%s",
             ("Total Processes: " + to_string(system.TotalProcesses())).c_str());
   mvwprintw(
       window, ++row, 2,

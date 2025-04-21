@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <map>
+#include <filesystem>
 #include <cstdint>
 
 #include "linux_parser.h"
@@ -141,11 +142,30 @@ long LinuxParser::IdleJiffies() { return 0; }
 // TODO: Read and return CPU utilization
 vector<string> LinuxParser::CpuUtilization() { return {}; }
 
-// TODO: Read and return the total number of processes
-int LinuxParser::TotalProcesses() { return 0; }
+// Read and return the total number of processes
+int LinuxParser::TotalProcesses()
+{
+  uint16_t count{0};
+  std::filesystem::path path{kProcDirectory};
+  std::filesystem::directory_iterator path_iterator(path);
+  for (std::filesystem::directory_entry entry : path_iterator)
+  {
+    std::string filename = entry.path().filename();
+    if (std::all_of(filename.begin(), filename.end(), [](char c)
+                    { return std::isdigit(c); }))
+    {
+      count++;
+    }
+  }
+  return count;
+}
 
 // TODO: Read and return the number of running processes
-int LinuxParser::RunningProcesses() { return 0; }
+int LinuxParser::RunningProcesses()
+{
+  
+  return 0;
+}
 
 // TODO: Read and return the command associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
