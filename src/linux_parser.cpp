@@ -21,25 +21,24 @@ const string MemFree{"MemFree"};
 string LinuxParser::KeyValParser(string key, string path)
 {
   string value = "n/a";
-  bool search = true;
   string line;
   string temp;
   std::ifstream stream(path);
   if (stream.is_open())
   {
-    while (search == true && stream.peek() != EOF)
+    while (std::getline(stream, line))
     {
-      std::getline(stream, line);
       std::istringstream linestream(line);
       linestream >> temp;
       if (temp == key)
       {
-        linestream >> temp;
-        value = temp;
-        search = false;
-      } // End inner if
-    } // End while
-  } // End outer if
+        linestream >> value;
+        return value;
+      }
+    }
+    throw std::runtime_error("EOF occurs and key not found");
+  }
+  throw std::runtime_error("File not found");
   return value;
 }
 
@@ -174,22 +173,23 @@ long LinuxParser::Jiffies()
 long LinuxParser::ActiveJiffies(int pid)
 {
   long a_jiffies = 0;
-  string utime;
-  string stime;
+  string usertime;
+  string systemtime;
   string line;
   string skip;
   std::ifstream stream(kProcDirectory + std::to_string(pid) + kStatFilename);
   if (stream.is_open())
   {
+    std::cout << "This is one time: " << std::endl;
     std::getline(stream, line);
     std::istringstream linestream(line);
     for (int i = 1; i < 14; ++i)
     {
       linestream >> skip;
     }
-    linestream >> utime >> stime;
+    linestream >> usertime >> systemtime;
   }
-  a_jiffies = std::atol(utime.c_str()) + std::atol(stime.c_str());
+  a_jiffies = std::stol(usertime) + std::stol(systemtime);
   return a_jiffies;
 }
 
