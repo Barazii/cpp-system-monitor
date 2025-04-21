@@ -36,9 +36,7 @@ string LinuxParser::KeyValParser(string key, string path)
         return value;
       }
     }
-    throw std::runtime_error("EOF occurs and key not found");
   }
-  throw std::runtime_error("File not found");
   return value;
 }
 
@@ -173,14 +171,13 @@ long LinuxParser::Jiffies()
 long LinuxParser::ActiveJiffies(int pid)
 {
   long a_jiffies = 0;
-  string usertime;
-  string systemtime;
+  string usertime{"0"};
+  string systemtime{"0"};
   string line;
   string skip;
   std::ifstream stream(kProcDirectory + std::to_string(pid) + kStatFilename);
   if (stream.is_open())
   {
-    std::cout << "This is one time: " << std::endl;
     std::getline(stream, line);
     std::istringstream linestream(line);
     for (int i = 1; i < 14; ++i)
@@ -257,7 +254,7 @@ int LinuxParser::RunningProcesses()
 // REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::Command(int pid)
 {
-  string line = "n/a";
+  string line{"n/a"};
   std::ifstream stream(kProcDirectory + std::to_string(pid) + kCmdlineFilename);
   if (stream.is_open())
   {
@@ -276,8 +273,6 @@ string LinuxParser::Ram(int pid)
 
 // TODO: Read and return the user ID associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
-#include <iostream>
-
 string LinuxParser::Uid(int pid)
 {
   string line;
