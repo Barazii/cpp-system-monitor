@@ -5,6 +5,7 @@
 #include <iostream>
 #include <filesystem>
 #include <map>
+#include <iterator>
 
 #include "linux_parser.h"
 
@@ -224,10 +225,9 @@ vector<string> LinuxParser::CpuUtilization()
     std::getline(stream, line);
     std::istringstream linestream(line);
     linestream >> skip;
-    for (int i = 0; i < 10; ++i)
+    for (std::istream_iterator<string> it(linestream); it != std::istream_iterator<string>(); ++it)
     {
-      linestream >> timer;
-      timers.push_back(timer);
+      timers.push_back(*it);
     }
   }
   return timers;
