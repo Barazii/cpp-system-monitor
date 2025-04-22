@@ -104,13 +104,13 @@ float LinuxParser::MemoryUtilization()
       if (key == MemTotal)
       {
         stringstream >> value;
-        memory[MemTotal] = std::stoi(value);
+        memory[MemTotal] = static_cast<std::uint32_t>(std::stoi(value));
         memTotalFlag = true;
       }
       if (key == MemAvailable)
       {
         stringstream >> value;
-        memory[MemAvailable] = std::stoi(value);
+        memory[MemAvailable] = static_cast<std::uint32_t>(std::stoi(value));
         memAvailableFlag = true;
       }
       if (memTotalFlag && memAvailableFlag)
@@ -123,8 +123,21 @@ float LinuxParser::MemoryUtilization()
   return mem;
 }
 
-// TODO: Read and return the system uptime
-long LinuxParser::UpTime() { return 0; }
+// Read and return the system uptime
+long LinuxParser::UpTime()
+{
+  uint64_t uptime;
+  std::string line, value;
+  std::ifstream filestream(kProcDirectory + kUptimeFilename);
+  if (filestream.is_open())
+  {
+    std::getline(filestream, line);
+    std::istringstream linestream(line);
+    linestream >> value;
+  }
+  uptime = static_cast<uint64_t>(std::stoul(value));
+  return uptime;
+}
 
 // TODO: Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() { return 0; }
@@ -146,8 +159,7 @@ vector<string> LinuxParser::CpuUtilization() { return {}; }
 int LinuxParser::TotalProcesses()
 {
   uint16_t count{0};
-  std::filesystem::path path{kProcDirectory};
-  std::filesystem::directory_iterator path_iterator(path);
+  std::filesystem::directory_iterator path_iterator(kProcDirectory);
   for (std::filesystem::directory_entry entry : path_iterator)
   {
     std::string filename = entry.path().filename();
@@ -160,11 +172,38 @@ int LinuxParser::TotalProcesses()
   return count;
 }
 
-// TODO: Read and return the number of running processes
+// Read and return the number of running processes
 int LinuxParser::RunningProcesses()
 {
-  
-  return 0;
+  uint16_t count{0};
+  std::string line, key, value;
+  std::filesystem::directory_iterator path_iterator(kProcDirectory);
+  for (std::filesystem::directory_entry entry : path_iterator)
+  {
+    std::string filename = entry.path().filename();
+    if (std::all_of(filename.begin(), filename.end(), [](char c)
+                    { return std::isdigit(c); }))
+    {
+      std::ifstream filestream(kProcDirectory + filename + "/" + "status");
+      if (filestream.is_open())
+      {
+        while (std::getline(filestream, line))
+        {
+          std::replace(line.begin(), line.end(), ':', ' ');
+          std::istringstream linestream(line);
+          linestream >> key;
+          if (key == "State")
+          {
+            linestream >> value;
+            if (value == "R")
+              count++;
+            break;
+          }
+        }
+      }
+    }
+  }
+  return count;
 }
 
 // TODO: Read and return the command associated with a process

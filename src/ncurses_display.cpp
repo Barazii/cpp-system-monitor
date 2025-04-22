@@ -48,9 +48,9 @@ void NCursesDisplay::DisplaySystem(System &system, WINDOW *window)
   mvwprintw(window, ++row, 2, "%s",
             ("Total Processes: " + to_string(system.TotalProcesses())).c_str());
   mvwprintw(
-      window, ++row, 2,
+      window, ++row, 2, "%s",
       ("Running Processes: " + to_string(system.RunningProcesses())).c_str());
-  mvwprintw(window, ++row, 2,
+  mvwprintw(window, ++row, 2, "%s",
             ("Up Time: " + Format::ElapsedTime(system.UpTime())).c_str());
   wrefresh(window);
 }
