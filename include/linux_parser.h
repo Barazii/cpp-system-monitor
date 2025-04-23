@@ -26,6 +26,7 @@ int TotalProcesses();
 int RunningProcesses();
 std::string OperatingSystem();
 std::string Kernel();
+std::vector<int> getProcessesPids();
 
 // CPU
 enum CPUStates {
@@ -52,6 +53,7 @@ std::string Ram(int pid);
 std::string Uid(int pid);
 std::string User(int pid);
 long int UpTime(int pid);
-};  // namespace LinuxParser
+float CpuUtilization(int pid);
+}; // namespace LinuxParser
 
 #endif
