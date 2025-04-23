@@ -17,7 +17,7 @@ using std::vector;
 // TODO: Return the system's CPU
 Processor &System::Cpu() { return cpu_; }
 
-// TODO: Return a container composed of the system's processes
+// Return a container composed of the system's processes
 vector<Process> &System::Processes() {
   std::vector<int> processesPids = LinuxParser::getProcessesPids();
   processes_.clear();
@@ -27,7 +27,7 @@ vector<Process> &System::Processes() {
     process.setCommand(LinuxParser::Command(pid));
     process.setCpuUtilization(LinuxParser::CpuUtilization(pid));
     process.setRam(LinuxParser::Ram(pid));
-    // process.setUpTime(LinuxParser::UpTime(pid));
+    process.setUpTime(LinuxParser::UpTime(pid));
     processes_.push_back(process);
   }
   std::sort(processes_.begin(), processes_.end(), std::greater<Process>());
