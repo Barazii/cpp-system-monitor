@@ -12,5 +12,5 @@ float Processor::Utilization()
     prevTotal_ = total;
     prevIdle_ = idle;
 
-    return totalDelta == 0 ? 0.0 : (total - idle) / (float)total;
+    return totalDelta == 0 ? 0.0 : (totalDelta - idleDelta) / (float)totalDelta;
 }
