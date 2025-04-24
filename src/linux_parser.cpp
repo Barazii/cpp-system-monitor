@@ -121,18 +121,17 @@ long LinuxParser::UpTime() {
   return uptime;
 }
 
-// TODO: Read and return the number of jiffies for the system
+// Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() {
-  vector<string> jiffies = CpuUtilization();
-  long t_jiffies = 0;
-  for (string jiffie : jiffies) {
-    t_jiffies += std::stoi(jiffie);
-  }
-  return t_jiffies;
+    vector<string> cpu_times = CpuUtilization();
+    long total = 0;
+    for (const string& time : cpu_times) {
+        total += stol(time);
+    }
+    return total;
 }
 
 // TODO: Read and return the number of active jiffies for a PID
-// REMOVE: [[maybe_unused]] once you define the function
 long LinuxParser::ActiveJiffies(int pid [[maybe_unused]]) {
   long a_jiffies = 0;
   string utime;
@@ -152,40 +151,40 @@ long LinuxParser::ActiveJiffies(int pid [[maybe_unused]]) {
   return a_jiffies;
 }
 
-// TODO: Read and return the number of active jiffies for the system
+// Read and return the number of active jiffies for the system
 long LinuxParser::ActiveJiffies() {
-  long a_jiffies = 0;
-  a_jiffies = Jiffies() - IdleJiffies();
-  return a_jiffies;
+    vector<string> cpu_times = CpuUtilization();
+    return stol(cpu_times[CPUStates::kUser_]) + 
+           stol(cpu_times[CPUStates::kNice_]) +
+           stol(cpu_times[CPUStates::kSystem_]) +
+           stol(cpu_times[CPUStates::kIRQ_]) +
+           stol(cpu_times[CPUStates::kSoftIRQ_]) +
+           stol(cpu_times[CPUStates::kSteal_]);
 }
 
-// TODO: Read and return the number of idle jiffies for the system
+// Read and return the number of idle jiffies for the system
 long LinuxParser::IdleJiffies() {
-  vector<string> jiffies = CpuUtilization();
-  long i_jiffies = 0;
-  long idle = std::stoi(jiffies[3]);
-  long iowait = std::stoi(jiffies[4]);
-  i_jiffies = idle + iowait;
-  return i_jiffies;
+    vector<string> cpu_times = CpuUtilization();
+    return stol(cpu_times[CPUStates::kIdle_]) + 
+           stol(cpu_times[CPUStates::kIOwait_]);
 }
 
-// TODO: Read and return CPU utilization
+// Read and return CPU utilization
 vector<string> LinuxParser::CpuUtilization() {
-  vector<string> timers;
-  string timer;
-  string line;
-  string skip;
-  std::ifstream stream(kProcDirectory + kStatFilename);
-  if (stream.is_open()) {
-    std::getline(stream, line);
-    std::istringstream linestream(line);
-    linestream >> skip;
-    for (int i = 0; i < 10; ++i) {
-      linestream >> timer;
-      timers.push_back(timer);
+    vector<string> timers;
+    string timer;
+    string line;
+    string skip;
+    std::ifstream stream(kProcDirectory + kStatFilename);
+    if (stream.is_open()) {
+        std::getline(stream, line);
+        std::istringstream linestream(line);
+        linestream >> skip;  // Skip "cpu" prefix
+        while (linestream >> timer) {
+            timers.push_back(timer);
+        }
     }
-  }
-  return timers;
+    return timers;
 }
 
 // Read and return the total number of processes
