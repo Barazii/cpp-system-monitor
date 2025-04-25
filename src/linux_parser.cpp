@@ -80,13 +80,13 @@ float LinuxParser::MemoryUtilization()
       if (key == MemTotal)
       {
         stringstream >> value;
-        memory[MemTotal] = static_cast<std::uint32_t>(std::stoi(value));
+        memory[MemTotal] = std::stoi(value);
         memTotalFlag = true;
       }
       if (key == MemAvailable)
       {
         stringstream >> value;
-        memory[MemAvailable] = static_cast<std::uint32_t>(std::stoi(value));
+        memory[MemAvailable] = std::stoi(value);
         memAvailableFlag = true;
       }
       if (memTotalFlag && memAvailableFlag)
@@ -308,7 +308,7 @@ string LinuxParser::Uid(int pid [[maybe_unused]]) { return string(); }
 // REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::User(int pid [[maybe_unused]]) { return string(); }
 
-// TODO: Read and return the uptime of a process
+// Read and return the uptime of a process
 // REMOVE: [[maybe_unused]] once you define the function
 long LinuxParser::UpTime(int pid [[maybe_unused]])
 {
