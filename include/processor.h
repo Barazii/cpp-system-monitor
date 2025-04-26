@@ -3,11 +3,11 @@
 
 class Processor {
 public:
-    float Utilization();
+  float Utilization();
 
 private:
-    long prevTotal_{0};
-    long prevIdle_{0};
+  long prevTotal_{0};
+  long prevIdle_{0};
 };
 
 #endif

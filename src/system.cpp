@@ -1,6 +1,8 @@
 #include <cstddef>
+#include <mutex>
 #include <set>
 #include <string>
+#include <thread>
 #include <unistd.h>
 #include <vector>
 
@@ -17,19 +19,44 @@ using std::vector;
 // Return the system's CPU
 Processor &System::Cpu() { return cpu_; }
 
-// Return a container composed of the system's processes
-vector<Process> &System::Processes() {
+// Helper function to create a Process object in a thread
+void createProcess(int pid, Process &process)
+{
+  process.setPid(pid);
+  process.setCommand(LinuxParser::Command(pid));
+  process.setCpuUtilization(LinuxParser::CpuUtilization(pid));
+  process.setRam(LinuxParser::Ram(pid));
+  process.setUpTime(LinuxParser::UpTime(pid));
+}
+
+// Return a container composed of the system's processes using multi-threading
+vector<Process> &System::Processes()
+{
   std::vector<int> processesPids = LinuxParser::getProcessesPids();
   processes_.clear();
-  for (int pid : processesPids) {
-    Process process;
-    process.setPid(pid);
-    process.setCommand(LinuxParser::Command(pid));
-    process.setCpuUtilization(LinuxParser::CpuUtilization(pid));
-    process.setRam(LinuxParser::Ram(pid));
-    process.setUpTime(LinuxParser::UpTime(pid));
-    processes_.push_back(process);
+
+  // Pre-allocate space for processes and threads
+  std::vector<Process> tempProcesses(processesPids.size());
+  std::vector<std::thread> threads;
+  threads.reserve(processesPids.size());
+
+  // Create threads for each PID
+  for (size_t i = 0; i < processesPids.size(); ++i)
+  {
+    threads.emplace_back(createProcess, processesPids[i],
+                         std::ref(tempProcesses[i]));
   }
+
+  // Wait for all threads to complete
+  for (std::thread &thread : threads)
+  {
+    thread.join();
+  }
+
+  // Move processes to the member vector
+  processes_ = std::move(tempProcesses);
+
+  // Sort processes by CPU utilization
   std::sort(processes_.begin(), processes_.end(), std::greater<Process>());
   return processes_;
 }
