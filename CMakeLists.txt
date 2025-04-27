@@ -23,7 +23,7 @@ set_property(TARGET monitor PROPERTY CXX_STANDARD 17)
 set_property(TARGET test_runner PROPERTY CXX_STANDARD 17)
 
 # link executables (which contain the sources) with libraries
-target_link_libraries(monitor ${CURSES_LIBRARIES})
+target_link_libraries(monitor ${CURSES_LIBRARIES} pthread)
 target_link_libraries(test_runner ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 # compile options
