@@ -20,8 +20,7 @@ using std::vector;
 Processor &System::Cpu() { return cpu_; }
 
 // Helper function to create a Process object in a thread
-void createProcess(int pid, Process &process)
-{
+void createProcess(int pid, Process &process) {
   process.setPid(pid);
   process.setCommand(LinuxParser::Command(pid));
   process.setCpuUtilization(LinuxParser::CpuUtilization(pid));
@@ -30,8 +29,7 @@ void createProcess(int pid, Process &process)
 }
 
 // Return a container composed of the system's processes using multi-threading
-vector<Process> &System::Processes()
-{
+vector<Process> &System::Processes() {
   std::vector<int> processesPids = LinuxParser::getProcessesPids();
   processes_.clear();
 
@@ -41,15 +39,13 @@ vector<Process> &System::Processes()
   threads.reserve(processesPids.size());
 
   // Create threads for each PID
-  for (size_t i = 0; i < processesPids.size(); ++i)
-  {
+  for (size_t i = 0; i < processesPids.size(); ++i) {
     threads.emplace_back(createProcess, processesPids[i],
                          std::ref(tempProcesses[i]));
   }
 
   // Wait for all threads to complete
-  for (std::thread &thread : threads)
-  {
+  for (std::thread &thread : threads) {
     thread.join();
   }
 

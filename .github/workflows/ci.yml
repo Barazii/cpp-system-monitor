@@ -19,7 +19,7 @@ jobs:
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
-        run: cmake --build build -j 2
+        run: cmake --build build
 
       - name: Run test executable directly
         run: ./build/test_runner --log_level=all

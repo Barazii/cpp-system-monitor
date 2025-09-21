@@ -1,5 +1,5 @@
 .PHONY: all
-all: format test build
+all: format build
 
 .PHONY: format
 format:
@@ -10,13 +10,6 @@ build:
 	mkdir -p build
 	cd build && \
 	cmake .. && \
-	make
-
-.PHONY: debug
-debug:
-	mkdir -p build
-	cd build && \
-	cmake -DCMAKE_BUILD_TYPE=debug .. && \
 	make
 
 .PHONY: clean
